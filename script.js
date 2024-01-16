@@ -1,33 +1,26 @@
-const form = document.getElementById("shorten-form");
-const longURLInput = document.getElementById("long-url");
-const resultDiv = document.getElementById("result");
+const express = require('express');
+const app = express();
+const port = 3000; // Or any available port
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault(); // Prevent page reload
+const urlMappings = {}; // Store long URL to short code mappings
 
-  const longURL = longURLInput.value;
-
-  // Generate a random 5-character code for the short URL
+app.post('/shorten', (req, res) => {
+  const longURL = req.body.longURL;
   const shortCode = createRandomCode(5);
+  urlMappings[shortCode] = longURL;
 
-  // Construct the short URL using the current page's URL and the short code
-  const shortURL = window.location.href + "#" + shortCode;
-
-  // Display the short URL
-  resultDiv.textContent = `Short URL: ${shortURL}`;
-
-  // Update the browser's hash so the short URL is visible in the address bar
-  window.location.hash = shortCode;
-
-  // Store the long URL and short code in local storage (optional)
-  // localStorage.setItem(shortCode, longURL);
+  res.redirect(`/${shortCode}`);
 });
 
-function createRandomCode(length) {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let code = "";
-  for (let i = 0; i < length; i++) {
-    code += characters.charAt(Math.floor(Math.random() * characters.length));
+app.get('/:shortCode', (req, res) => {
+  const longURL = urlMappings[req.params.shortCode];
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.status(404).send('Short URL not found');
   }
-  return code;
-}
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});

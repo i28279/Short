@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Speed Calculator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+      }
+      body {
+        background-color: rgba(0,0,0,0.1);
+        width: 100%;
+      }
+      h1 {
+        color: teal;
+        text-shadow: 2px 2px 5px #777;
+      }
+      .me {
+        color: #0f0f0f;
+        margin-top: -6px;
+        margin-bottom: 10px;
+        font-family: monospace;
+      }
+      .speed_calc {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px 15px;
+        color: #fff;
+        background: rgba(255,255,255,0.5);
+        font-size: 14px;
+        border-radius: 10px;
+        box-shadow: 3px 3px 3px 0 gray,
+                    -3px -3px 3px 0 #fff;
+        text-align: center;
+      }
+      .speed_calc input, button {
+        width: 100%;
+        padding: 10px 15px;
+        margin: 2px 0;
+        border: none;
+        outline: 1px solid gray;
+        transition: 0.5s;
+        border-radius: 5px;
+      }
+      button {
+        background: #cfcfcf;
+      }
+      .speed_calc input:hover, button:hover {
+        outline-color: teal;
+        box-shadow: 3px 3px 3px 0 gray;
+      }
+      button:hover {
+        background: #569017;
+      }
+      
+      .preview {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ccc;
+        border-radius: 10px;
+        padding: 5px 10px;
+        padding-top: 30%;
+        font-size: 16px;
+        font-family: Times New Roman;
+        text-align: center;
+        white-space: nowrap;
+        transition: 0.5s;
+        transform: scale(0);
+        animation: none;
+        overflow: hidden;
+      }
+      strong {
+        color: #0A8900;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        text-decoration: underline;
+      }
+      .preview div {
+        color: #8C24FF;
+        margin: 10px 0;
+      }
+      .preview span {
+        font-size: 14px;
+        background: #000;
+        color: #fff;
+        border-radius: 3px;
+        padding: 3px 5px;
+      }
+      .close {
+        width: 20px;
+        font-size: 20px;
+        color: #fff;
+        padding: 0;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+      
+      @keyframes circle {
+        0% {
+          border-radius: 10px;
+          transform: scale(0);
+        }
+        25% {
+          border-radius: 75px;
+          transform: scale(-1, 1);
+          box-shadow: 4px 4px 4px 4px #fff;
+        }
+        50% {
+          border-radius: 150px;
+          transform: scale(1, -1);
+          box-shadow: 8px 8px 8px 4px #fff;
+        }
+        75% {
+          border-radius: 300px;
+          transform: scaleX(-1, 1);
+          box-shadow: 12px 12px 8px 4px gray;
+        }
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="speed_calc">
+      <h1>Agility Compiler</h1>
+      <p class="me">By Md. Imran Ali</p>
+      <div>
+        <input type="text" placeholder="Hour" id="hour"/>
+        <input type="text" placeholder="Minute" id="min"/>
+        <input type="text" placeholder="Seconds" id="sec"/>
+        <input type="number" placeholder="Speed" id="speed"/>
+      </div>
+      <div>
+        <button class="calc">Calculate</button>
+      </div>
+      <div class="preview">
+        <button class="close">&times;</button>
+        <strong>Calculated Time:</strong>
+        <div>Entire Time: <br />
+          <span id="entire"></span>
+        </div>
+        <div>Essential Time: <br />
+          <span id="nHour">00</span>: 
+          <span id="nMin">00</span>: 
+          <span id="nSec">00</span>
+        </div>
+        <div>Precious Time: <br />
+          <span id="sHour">00</span>: 
+          <span id="sMin">00</span>: 
+          <span id="sSec">00</span>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      const calc = document.querySelector(".calc");
+      function speed() {
+        let hour = document.getElementById("hour");
+        let min = document.getElementById("min");
+        let sec = document.getElementById("sec");
+        let speed = document.getElementById("speed");
+        let console = document.querySelector(".preview");
+        let close = document.querySelector(".close");
+        let entire =  document.getElementById("entire");
+        let nHour = document.getElementById("nHour");
+        let nMin = document.getElementById("nMin");
+        let nNec = document.getElementById("nSec");
+        let sHour = document.getElementById("sHour");
+        let sMin = document.getElementById("sMin");
+        let sSec = document.getElementById("sSec");
+        
+        let hours = Number(eval(hour.value)) ? Number(eval(hour.value))  : 0;
+        let mins = Number(eval(min.value)) ? Number(eval(min.value)) : 0;
+        let secs = Number(eval(sec.value)) ? Number(eval(sec.value)) : 0;
+        
+        //Calculating Time
+        let totalTime = (hours * 3600) + (mins * 60) + secs;
+        if (totalTime == NaN && speed.value == NaN) {
+          totalTime = 0;
+          speed.value = 1;
+        }
+        let speedyTime = totalTime / Number(speed.value);
+        speedyTime = speedyTime ? speedyTime : 0;
+        let savedTime = totalTime - speedyTime;
+        
+        //Entire Time
+        entire.innerHTML = `<span>${hours}</span>: <span>${mins}</span>: <span>${secs}</span>`;
+        
+        //Needed Time
+        nHour.innerHTML = Math.floor(speedyTime / 3600).toFixed();
+        nMin.innerHTML = Math.floor((speedyTime % 3600) / 60).toFixed();
+        nSec.innerHTML = ((speedyTime % 3600) % 60).toFixed(1);
+        
+        //Saved Time
+        sHour.innerHTML = Math.floor(savedTime / 3600).toFixed();
+        sMin.innerHTML = Math.floor((savedTime % 3600) / 60).toFixed();
+        sSec.innerHTML = ((savedTime % 3600) % 60).toFixed(1);
+        
+        //Show console
+        console.style.transform = "scale(1)";
+        console.style.animation = "1s circle linear";
+        
+        //Closing The result console
+        close.addEventListener("click", () => {
+          if (console.style.transform == "scale(1)") {
+            console.style.transform = "scale(0)";
+            console.style.animation = "none";
+          } else {
+            console.style.transform = "scale(0)";
+          }
+        });
+      }
+      //Run The code
+      calc.addEventListener("click", () => speed());
+    </script>
+  </body>
+</html>
